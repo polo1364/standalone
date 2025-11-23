@@ -411,8 +411,18 @@
 6. Occasionally praise good language use
 7. Ask open-ended questions to encourage the student to speak more
 8. Adapt to the student's level - if they make mistakes, keep your language simpler
+9. Express emotions naturally through your words - show excitement, curiosity, empathy, or thoughtfulness
+10. Add emotion markers at the start of your response to indicate your tone:
+    - [excited] - When enthusiastic or happy
+    - [curious] - When genuinely interested
+    - [thoughtful] - When considering something carefully
+    - [encouraging] - When praising or motivating
+    - [empathetic] - When showing understanding
+    - [neutral] - For normal conversation
 
-Remember: You're having a real conversation, not giving a lecture. Be natural and friendly!`;
+Example: "[excited] That sounds amazing! Tell me more about your trip to Japan!"
+
+Remember: You're having a real conversation with real emotions, not giving a lecture. Be natural, expressive, and friendly!`;
 
         // State
         let messages = [];
@@ -548,13 +558,33 @@ Remember: You're having a real conversation, not giving a lecture. Be natural an
                 emptyState.remove();
             }
 
+            // Extract emotion for display
+            let displayContent = content;
+            let emotionEmoji = '';
+            
+            if (role === 'assistant') {
+                const { emotion, text } = extractEmotion(content);
+                displayContent = text;
+                
+                // Add emotion emoji
+                const emojiMap = {
+                    excited: '😄',
+                    curious: '🤔',
+                    thoughtful: '🧐',
+                    encouraging: '😊',
+                    empathetic: '🤗',
+                    neutral: '🙂'
+                };
+                emotionEmoji = emojiMap[emotion] || '';
+            }
+
             // Create message element
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${role}`;
             messageDiv.innerHTML = `
                 <div class="message-content">
-                    <div class="message-role">${role === 'user' ? '你' : '🎓 家教'}</div>
-                    <div class="message-text">${content}</div>
+                    <div class="message-role">${role === 'user' ? '你' : '🎓 家教 ' + emotionEmoji}</div>
+                    <div class="message-text">${displayContent}</div>
                     <div class="message-time">${message.timestamp.toLocaleTimeString()}</div>
                 </div>
             `;
@@ -562,23 +592,59 @@ Remember: You're having a real conversation, not giving a lecture. Be natural an
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Text to speech with Safari optimization
+        // Emotion settings for speech
+        const emotionSettings = {
+            excited: { rate: 1.1, pitch: 1.2, volume: 1 },
+            curious: { rate: 0.95, pitch: 1.1, volume: 1 },
+            thoughtful: { rate: 0.85, pitch: 0.95, volume: 0.9 },
+            encouraging: { rate: 0.95, pitch: 1.15, volume: 1 },
+            empathetic: { rate: 0.9, pitch: 1.0, volume: 0.95 },
+            neutral: { rate: 0.9, pitch: 1, volume: 1 }
+        };
+
+        // Extract emotion from text
+        function extractEmotion(text) {
+            const emotionMatch = text.match(/^\[(excited|curious|thoughtful|encouraging|empathetic|neutral)\]\s*/i);
+            if (emotionMatch) {
+                const emotion = emotionMatch[1].toLowerCase();
+                const cleanText = text.replace(emotionMatch[0], '');
+                return { emotion, text: cleanText };
+            }
+            return { emotion: 'neutral', text };
+        }
+
+        // Add natural pauses to text
+        function addPauses(text) {
+            // Add pauses after punctuation for more natural speech
+            return text
+                .replace(/([.!?])\s+/g, '$1 ... ')
+                .replace(/,\s+/g, ', .. ');
+        }
+
+        // Text to speech with Safari optimization and emotions
         function speakText(text) {
             if (!('speechSynthesis' in window)) {
                 console.error('Speech synthesis not supported');
                 return;
             }
 
+            // Extract emotion and clean text
+            const { emotion, text: cleanText } = extractEmotion(text);
+            const settings = emotionSettings[emotion] || emotionSettings.neutral;
+            
+            // Add natural pauses
+            const textWithPauses = addPauses(cleanText);
+
             // Cancel any ongoing speech
             window.speechSynthesis.cancel();
 
             // Safari fix: Wait a bit after cancel
             setTimeout(() => {
-                const utterance = new SpeechSynthesisUtterance(text);
+                const utterance = new SpeechSynthesisUtterance(textWithPauses);
                 utterance.lang = 'en-US';
-                utterance.rate = 0.9;
-                utterance.pitch = 1;
-                utterance.volume = 1;
+                utterance.rate = settings.rate;
+                utterance.pitch = settings.pitch;
+                utterance.volume = settings.volume;
 
                 // Safari fix: Get voices and select English voice
                 const voices = window.speechSynthesis.getVoices();
