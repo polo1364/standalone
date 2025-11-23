@@ -592,14 +592,14 @@ Remember: You're having a real conversation with real emotions, not giving a lec
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Emotion settings for speech
+        // Emotion settings for speech (adjusted for learning - slower and clearer)
         const emotionSettings = {
-            excited: { rate: 1.1, pitch: 1.2, volume: 1 },
-            curious: { rate: 0.95, pitch: 1.1, volume: 1 },
-            thoughtful: { rate: 0.85, pitch: 0.95, volume: 0.9 },
-            encouraging: { rate: 0.95, pitch: 1.15, volume: 1 },
-            empathetic: { rate: 0.9, pitch: 1.0, volume: 0.95 },
-            neutral: { rate: 0.9, pitch: 1, volume: 1 }
+            excited: { rate: 0.85, pitch: 1.15, volume: 1 },
+            curious: { rate: 0.75, pitch: 1.05, volume: 1 },
+            thoughtful: { rate: 0.7, pitch: 0.95, volume: 0.9 },
+            encouraging: { rate: 0.8, pitch: 1.1, volume: 1 },
+            empathetic: { rate: 0.75, pitch: 1.0, volume: 0.95 },
+            neutral: { rate: 0.75, pitch: 1, volume: 1 }
         };
 
         // Extract emotion from text
