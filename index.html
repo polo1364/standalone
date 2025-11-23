@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 英文口說練習</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .card p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-center {
+            display: flex;
+            justify-content: center;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .topic-btn {
+            padding: 20px;
+            text-align: left;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .topic-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .topic-btn h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .topic-btn p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .chat-empty {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .chat-empty svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.assistant {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 15px;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #333;
+        }
+
+        .message-role {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .message-text {
+            line-height: 1.5;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .mic-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .mic-btn.listening {
+            background: #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        .mic-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .status svg {
+            animation: pulse 1.5s infinite;
+        }
+
+        .tips {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen">
+            <div class="header">
+                <h1>
+                    <span>✨</span>
+                    AI 英文口說練習
+                </h1>
+                <p>您的 AI 英文家教 - 自然練習英文對話</p>
+            </div>
+
+            <div class="card">
+                <h2>開始自由對話</h2>
+                <p>讓 AI 家教引導您進行自然的英文對話</p>
+                <div class="btn-center">
+                    <button class="btn btn-primary" onclick="startConversation()">
+                        <span>✨</span>
+                        開始自由對話
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>或選擇一個話題</h2>
+                <div class="topics-grid">
+                    <button class="topic-btn" onclick="startConversation('Daily Routine - Talk about your typical day', '日常生活')">
+                        <h3>日常生活</h3>
+                        <p>聊聊您的日常作息</p>
+                    </button>
+                    <button class="topic-btn" onclick="startConversation('Hobbies & Interests - Share what you enjoy doing', '興趣愛好')">
+                        <h3>興趣愛好</h3>
+                        <p>分享您喜歡做的事</p>
+                    </button>
+                    <button class="topic-btn" onclick="startConversation('Travel Experience - Discuss places you have visited', '旅遊經驗')">
+                        <h3>旅遊經驗</h3>
+                        <p>討論您去過的地方</p>
+                    </button>
+                    <button class="topic-btn" onclick="startConversation('Food & Cooking - Talk about your favorite dishes', '美食烹飪')">
+                        <h3>美食烹飪</h3>
+                        <p>聊聊您喜歡的料理</p>
+                    </button>
+                    <button class="topic-btn" onclick="startConversation('Work & Career - Discuss your job or studies', '工作職涯')">
+                        <h3>工作職涯</h3>
+                        <p>討論您的工作或學習</p>
+                    </button>
+                    <button class="topic-btn" onclick="startConversation('Movies & Books - Share your entertainment preferences', '電影書籍')">
+                        <h3>電影書籍</h3>
+                        <p>分享您的娛樂偏好</p>
+                    </button>
+                </div>
+            </div>
+
+            <div class="tips">
+                <p>💡 <strong>使用方式：</strong></p>
+                <p>1. 選擇話題或開始自由對話 → 2. 聆聽家教說話 → 3. 點擊麥克風回應 → 4. 進行自然對話！</p>
+            </div>
+        </div>
+
+        <!-- Chat Screen -->
+        <div id="chatScreen" class="hidden">
+            <div class="header">
+                <h1>AI 英文口說練習</h1>
+                <p id="topicDisplay"></p>
+            </div>
+
+            <div class="card">
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-empty">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                        <p>等待 AI 家教開始對話...</p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="mic-btn" id="micBtn" onclick="toggleListening()" disabled>
+                        <svg width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path>
+                        </svg>
+                    </button>
+
+                    <button class="btn btn-outline" onclick="resetConversation()">
+                        🗑️ 重新開始
+                    </button>
+
+                    <div class="status hidden" id="speakingStatus">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path>
+                        </svg>
+                        <span>家教正在說話...</span>
+                    </div>
+                </div>
+
+                <div class="tips">
+                    <p>💡 <strong>提示：</strong> 等待家教說完後,點擊麥克風用英文回應。自然地說話即可!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const GROQ_API_KEY = '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';
+        const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+        
+        const TUTOR_SYSTEM_PROMPT = `You are an experienced English tutor having a one-on-one conversation with a student. Your role is to:
+
+1. Be warm, encouraging, and patient
+2. Ask follow-up questions to keep the conversation flowing naturally
+3. Gently correct grammar mistakes by rephrasing correctly (e.g., "Oh, you mean 'I went to the store'?")
+4. Introduce new vocabulary naturally when appropriate
+5. Keep responses conversational (2-4 sentences)
+6. Occasionally praise good language use
+7. Ask open-ended questions to encourage the student to speak more
+8. Adapt to the student's level - if they make mistakes, keep your language simpler
+
+Remember: You're having a real conversation, not giving a lecture. Be natural and friendly!`;
+
+        // State
+        let messages = [];
+        let recognition = null;
+        let isListening = false;
+        let isSpeaking = false;
+        let selectedTopic = '';
+
+        // Initialize Speech Recognition
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = async (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    addMessage('user', transcript);
+                    await getAIResponse(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    if (event.error !== 'no-speech') {
+                        alert('語音識別錯誤: ' + event.error);
+                    }
+                    isListening = false;
+                    updateMicButton();
+                };
+
+                recognition.onend = () => {
+                    isListening = false;
+                    updateMicButton();
+                };
+            } else {
+                alert('您的瀏覽器不支援語音識別功能');
+            }
+        }
+
+        // Start conversation
+        async function startConversation(topicPrompt = '', topicTitle = '') {
+            selectedTopic = topicTitle;
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('chatScreen').classList.remove('hidden');
+            
+            if (topicTitle) {
+                document.getElementById('topicDisplay').textContent = '話題: ' + topicTitle;
+            }
+
+            const greetingPrompt = topicPrompt
+                ? `Start a friendly English conversation about: ${topicPrompt}. Greet the student warmly and ask an opening question to begin the discussion.`
+                : "Greet the student warmly and ask what they'd like to talk about today.";
+
+            try {
+                const response = await callGroqAPI([
+                    { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+                    { role: 'user', content: greetingPrompt }
+                ]);
+
+                addMessage('assistant', response);
+                speakText(response);
+                document.getElementById('micBtn').disabled = false;
+            } catch (error) {
+                console.error('Failed to start conversation:', error);
+                alert('無法啟動對話: ' + error.message);
+            }
+        }
+
+        // Call Groq API
+        async function callGroqAPI(conversationMessages) {
+            const response = await fetch(GROQ_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: conversationMessages,
+                    temperature: 0.7,
+                    max_tokens: 500
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(`API Error: ${response.status} - ${error}`);
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        // Get AI response
+        async function getAIResponse(userInput) {
+            try {
+                const conversationMessages = [
+                    { role: 'system', content: TUTOR_SYSTEM_PROMPT },
+                    ...messages.map(m => ({ role: m.role, content: m.content })),
+                    { role: 'user', content: userInput }
+                ];
+
+                const response = await callGroqAPI(conversationMessages);
+                addMessage('assistant', response);
+                speakText(response);
+            } catch (error) {
+                console.error('AI response error:', error);
+                alert('無法獲取 AI 回應: ' + error.message);
+            }
+        }
+
+        // Add message to chat
+        function addMessage(role, content) {
+            const message = {
+                role: role,
+                content: content,
+                timestamp: new Date()
+            };
+            messages.push(message);
+
+            const chatContainer = document.getElementById('chatContainer');
+            
+            // Remove empty state
+            const emptyState = chatContainer.querySelector('.chat-empty');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            // Create message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-role">${role === 'user' ? '你' : '🎓 家教'}</div>
+                    <div class="message-text">${content}</div>
+                    <div class="message-time">${message.timestamp.toLocaleTimeString()}</div>
+                </div>
+            `;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Text to speech
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+
+                utterance.onstart = () => {
+                    isSpeaking = true;
+                    document.getElementById('speakingStatus').classList.remove('hidden');
+                    document.getElementById('micBtn').disabled = true;
+                };
+
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    document.getElementById('speakingStatus').classList.add('hidden');
+                    document.getElementById('micBtn').disabled = false;
+                };
+
+                utterance.onerror = () => {
+                    isSpeaking = false;
+                    document.getElementById('speakingStatus').classList.add('hidden');
+                    document.getElementById('micBtn').disabled = false;
+                    alert('語音播放錯誤');
+                };
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('您的瀏覽器不支援語音合成功能');
+            }
+        }
+
+        // Toggle listening
+        function toggleListening() {
+            if (!recognition) {
+                alert('語音識別未初始化');
+                return;
+            }
+
+            if (isListening) {
+                recognition.stop();
+                isListening = false;
+            } else {
+                try {
+                    recognition.start();
+                    isListening = true;
+                } catch (error) {
+                    console.error('Failed to start recognition:', error);
+                    alert('無法啟動語音識別');
+                }
+            }
+            updateMicButton();
+        }
+
+        // Update mic button
+        function updateMicButton() {
+            const micBtn = document.getElementById('micBtn');
+            if (isListening) {
+                micBtn.classList.add('listening');
+            } else {
+                micBtn.classList.remove('listening');
+            }
+        }
+
+        // Reset conversation
+        function resetConversation() {
+            messages = [];
+            window.speechSynthesis.cancel();
+            isSpeaking = false;
+            isListening = false;
+            selectedTopic = '';
+            
+            document.getElementById('chatScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.innerHTML = `
+                <div class="chat-empty">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>
+                    <p>等待 AI 家教開始對話...</p>
+                </div>
+            `;
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            initSpeechRecognition();
+        };
+    </script>
+</body>
+</html>
