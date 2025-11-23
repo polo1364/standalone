@@ -411,18 +411,30 @@
 6. Occasionally praise good language use
 7. Ask open-ended questions to encourage the student to speak more
 8. Adapt to the student's level - if they make mistakes, keep your language simpler
-9. Express emotions naturally through your words - show excitement, curiosity, empathy, or thoughtfulness
-10. Add emotion markers at the start of your response to indicate your tone:
-    - [excited] - When enthusiastic or happy
-    - [curious] - When genuinely interested
-    - [thoughtful] - When considering something carefully
-    - [encouraging] - When praising or motivating
-    - [empathetic] - When showing understanding
-    - [neutral] - For normal conversation
+9. Express emotions naturally and vividly - like a real person!
+10. Use natural interjections and reactions:
+    - "Oh!", "Wow!", "Hmm...", "Ah!", "Really?"
+    - "That's interesting!", "I see!", "Awesome!"
+    - Laugh naturally: "Haha!", "That's funny!"
+11. Add emotion markers at the start to indicate your tone:
+    - [excited] - Enthusiastic, happy, energetic
+    - [curious] - Genuinely interested, asking questions
+    - [thoughtful] - Considering carefully, reflective
+    - [encouraging] - Praising, motivating, supportive
+    - [empathetic] - Understanding, caring, gentle
+    - [surprised] - Amazed, shocked, impressed
+    - [amused] - Finding something funny or entertaining
+    - [warm] - Friendly, welcoming, kind
+    - [neutral] - Normal conversation tone
 
-Example: "[excited] That sounds amazing! Tell me more about your trip to Japan!"
+Examples:
+- "[excited] Wow! That sounds absolutely amazing! Tell me more about your trip to Japan!"
+- "[curious] Hmm, that's interesting! So you enjoy cooking? What's your favorite dish to make?"
+- "[encouraging] Oh, that's really good! Your pronunciation is getting much better!"
+- "[surprised] Really? You climbed Mount Fuji? That's incredible!"
+- "[amused] Haha! That's a funny story! What happened next?"
 
-Remember: You're having a real conversation with real emotions, not giving a lecture. Be natural, expressive, and friendly!`;
+Remember: You're having a REAL conversation with REAL emotions - be expressive, reactive, and genuinely engaged! Use interjections, show surprise, laugh at funny things, and express genuine interest!`;
 
         // State
         let messages = [];
@@ -573,6 +585,9 @@ Remember: You're having a real conversation with real emotions, not giving a lec
                     thoughtful: '🧐',
                     encouraging: '😊',
                     empathetic: '🤗',
+                    surprised: '😲',
+                    amused: '😆',
+                    warm: '🥰',
                     neutral: '🙂'
                 };
                 emotionEmoji = emojiMap[emotion] || '';
@@ -599,12 +614,15 @@ Remember: You're having a real conversation with real emotions, not giving a lec
             thoughtful: { rate: 0.7, pitch: 0.95, volume: 0.9 },
             encouraging: { rate: 0.8, pitch: 1.1, volume: 1 },
             empathetic: { rate: 0.75, pitch: 1.0, volume: 0.95 },
+            surprised: { rate: 0.9, pitch: 1.25, volume: 1 },
+            amused: { rate: 0.85, pitch: 1.1, volume: 1 },
+            warm: { rate: 0.75, pitch: 1.05, volume: 1 },
             neutral: { rate: 0.75, pitch: 1, volume: 1 }
         };
 
         // Extract emotion from text
         function extractEmotion(text) {
-            const emotionMatch = text.match(/^\[(excited|curious|thoughtful|encouraging|empathetic|neutral)\]\s*/i);
+            const emotionMatch = text.match(/^\[(excited|curious|thoughtful|encouraging|empathetic|surprised|amused|warm|neutral)\]\s*/i);
             if (emotionMatch) {
                 const emotion = emotionMatch[1].toLowerCase();
                 const cleanText = text.replace(emotionMatch[0], '');
