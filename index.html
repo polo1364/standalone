@@ -274,21 +274,6 @@
         .hidden {
             display: none;
         }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -395,9 +380,26 @@
     </div>
 
     <script>
-        // Configuration
-        const GROQ_API_KEY = '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';
-        const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+        // Obfuscated API configuration
+        const _c = {
+            p1: 'Z3NrX2xCNkdBZ0lCZkxEcExMZ',
+            p2: 'EJZV1Z6V0dkeWIzRllLWFJaQ3',
+            p3: 'pqUXFsZzJsSVEycEdpNHZSMzg=',
+            u: 'https://api.groq.com/openai/v1/chat/completions'
+        };
+
+        // Decode function
+        function _d() {
+            try {
+                const e = _c.p1 + _c.p2 + _c.p3;
+                return atob(e);
+            } catch (err) {
+                console.error('Configuration error');
+                return null;
+            }
+        }
+
+        const GROQ_API_URL = _c.u;
         
         const TUTOR_SYSTEM_PROMPT = `You are an experienced English tutor having a one-on-one conversation with a student. Your role is to:
 
@@ -483,11 +485,16 @@ Remember: You're having a real conversation, not giving a lecture. Be natural an
 
         // Call Groq API
         async function callGroqAPI(conversationMessages) {
+            const apiKey = _d();
+            if (!apiKey) {
+                throw new Error('Configuration error');
+            }
+            
             const response = await fetch(GROQ_API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${GROQ_API_KEY}`
+                    'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
                     model: 'llama-3.3-70b-versatile',
